@@ -16,14 +16,14 @@ def transform_custom(df: DataFrame,*args, **kwargs):
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
     # data corelation
-    df.corr().round(2)
-    sb.heatmap(df.corr().round(2),annot=False )
-    sb.pairplot(df,  y_vars = ['status'] , plot_kws=  {'alpha' : 0.1})
-    # visualize Outlier to check if our outlier removal not worked
-    sb.set(rc={'figure.figsize':(20,8.20)})
-    sb.boxplot(df)
+    # df.corr().round(2)
+    # sb.heatmap(df.corr().round(2),annot=False )
+    # sb.pairplot(df,  y_vars = ['status'] , plot_kws=  {'alpha' : 0.1})
+    # # visualize Outlier to check if our outlier removal not worked
+    # sb.set(rc={'figure.figsize':(20,8.20)})
+    # sb.boxplot(df)
 
-    return {}
+    return df
 
 
 @test
