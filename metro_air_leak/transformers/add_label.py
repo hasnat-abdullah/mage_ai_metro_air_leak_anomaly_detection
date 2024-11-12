@@ -1,5 +1,6 @@
 from pandas import DataFrame
 import pandas as pd
+import numpy as np
 
 if 'transformer' not in globals():
     from mage_ai.data_preparation.decorators import transformer
@@ -8,24 +9,23 @@ if 'test' not in globals():
 
 
 @transformer
-def transform(data, *args, **kwargs) -> DataFrame:
+def transform(df: DataFrame, *args, **kwargs) -> DataFrame:
     """
-    Template code for a transformer block.
-
-    Add more parameters to this function if this block has multiple parent blocks.
-    There should be one parameter for each output variable from each parent block.
+    comvert timestamp column from str to datetime type.
+    Add another column called 'status' where 0 = Normal and 1 = Failure.
+    Dataset provided the failure start and end time. based on this data we will figure out the status value.
 
     Args:
-        data: The output from the upstream parent block
+        df: The output from the upstream parent block
         args: The output from any additional upstream blocks (if applicable)
 
     Returns:
-        Anything (e.g. data frame, dictionary, array, int, str, etc.)
+        DataFrame
     """
-    timestamp_column = '_timestamp'
+    timestamp_column = 'timestamp'
+    df[timestamp_column] = pd.to_datetime(df[timestamp_column], format="%Y-%m-%d %H:%M:%S")
     
-    data[timestamp_column] = data[timestamp_column].apply(pd.to_datetime, format = "%Y-%m-%d %H:%M:%S")
-    
+    # Define failure start and end times
     failure_start_time = pd.to_datetime([
         "2020-04-18 00:00:00", 
         "2020-05-29 23:30:00", 
@@ -39,18 +39,18 @@ def transform(data, *args, **kwargs) -> DataFrame:
         "2020-07-15 19:00:00"
     ])
     
-    # Create IntervalIndex for failure intervals including start and end point
-    intervals = pd.IntervalIndex.from_tuples(list(zip(failure_start_time, failure_end_time)), closed='both')
+    # Create an array of boolean series for each interval
+    conditions = [(df[timestamp_column] >= start) & (df[timestamp_column] <= end) 
+                  for start, end in zip(failure_start_time, failure_end_time)]
     
-    # if in the failure time interval then 1 else 0
-    data['status'] = data[timestamp_column].apply(lambda x: 1 if any(x in interval for interval in intervals) else 0)
+    # Combine all conditions with logical OR
+    df['status'] = np.where(np.logical_or.reduce(conditions), 1, 0)
     
-    print(data.head())
-    status_counts = data['status'].value_counts()
+    status_counts = df['status'].value_counts()
     print("Total Positive (failure) sample with status = 1:", status_counts.get(1, 0))
     print("Total Negative (normal) sample with status = 0:", status_counts.get(0, 0))
-
-    return data
+    
+    return df
 
 
 @test
@@ -58,7 +58,7 @@ def test_output(output, *args) -> None:
     """
     testing datetime type.
     """
-    assert pd.api.types.is_datetime64_any_dtype(output['_timestamp']), "Timestamp column conversion to datetime failed."
+    assert pd.api.types.is_datetime64_any_dtype(output['timestamp']), "Timestamp column conversion to datetime failed."
     assert 'status' in output.columns, "The 'status' column does not exist in the DataFrame."
 
     valid_status_values = {0, 1}
