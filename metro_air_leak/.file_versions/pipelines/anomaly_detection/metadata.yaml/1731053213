@@ -1,0 +1,176 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - data_overview
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load data from poargres
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_data_from_poargres
+- all_upstream_blocks_executed: true
+  color: teal
+  configuration: {}
+  downstream_blocks:
+  - remove__unnecessary_columns
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: data_overview
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - load_data_from_poargres
+  uuid: data_overview
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - remove_duplicate
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: remove _unnecessary_columns
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - data_overview
+  uuid: remove__unnecessary_columns
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - clean_data_visualisation
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: add label
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - find_and_drop_ouliers
+  uuid: add_label
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - add_label
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: find and drop ouliers
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - remove_duplicate
+  uuid: find_and_drop_ouliers
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - find_and_drop_ouliers
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: remove duplicate
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - remove__unnecessary_columns
+  uuid: remove_duplicate
+- all_upstream_blocks_executed: true
+  color: yellow
+  configuration: {}
+  downstream_blocks:
+  - train_knn
+  - train_random_forest
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: clean data visualisation
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - add_label
+  uuid: clean_data_visualisation
+- all_upstream_blocks_executed: true
+  color: pink
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: train_KNN
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - clean_data_visualisation
+  uuid: train_knn
+- all_upstream_blocks_executed: true
+  color: blue
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: train_random_forest
+  retry_config: null
+  status: updated
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - clean_data_visualisation
+  uuid: train_random_forest
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config: {}
+conditionals: []
+created_at: '2024-11-07 07:43:58.477877+00:00'
+data_integration: null
+description: null
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: anomaly_detection
+notification_config: {}
+remote_variables_dir: null
+retry_config: {}
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: anomaly_detection
+variables_dir: /home/src/mage_data/metro_air_leak
+widgets: []

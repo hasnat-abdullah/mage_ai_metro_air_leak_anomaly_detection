@@ -1,0 +1,15 @@
+sync_config:
+  access_token_secret_name: null
+  auth_type: https
+  branch: null
+  email: null
+  remote_repo_link: null
+  repo_path: /home/src
+  ssh_private_key_secret_name: null
+  ssh_public_key_secret_name: null
+  sync_on_executor_start: null
+  sync_on_pipeline_run: null
+  sync_on_start: null
+  sync_submodules: null
+  type: null
+  username: null

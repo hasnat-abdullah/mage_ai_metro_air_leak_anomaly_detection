@@ -5,7 +5,7 @@ blocks:
     file_source:
       path: data_loaders/load_air_compressor_data.py
   downstream_blocks:
-  - save_to_postgres
+  - add_label
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -21,6 +21,58 @@ blocks:
   color: null
   configuration:
     file_source:
+      path: transformers/add_label.py
+  downstream_blocks:
+  - data_validate_by_pydentic
+  - data_validate_by_df_vector
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: add_label
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_air_compressor_data
+  uuid: add_label
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: data validate by pydentic
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - add_label
+  uuid: data_validate_by_pydentic
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: data_validate_by_df_vector
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - add_label
+  uuid: data_validate_by_df_vector
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    file_source:
       path: data_exporters/save_to_postgres.py
   downstream_blocks: []
   executor_config: null
@@ -29,11 +81,11 @@ blocks:
   language: python
   name: save_to_postgres
   retry_config: null
-  status: not_executed
+  status: failed
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - load_air_compressor_data
+  - data_validate_by_pydentic
   uuid: save_to_postgres
 cache_block_output_in_memory: false
 callbacks: []
