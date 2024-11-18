@@ -80,7 +80,7 @@ blocks:
   language: python
   name: train_model_by_pyod/train_knn
   retry_config: null
-  status: not_executed
+  status: executed
   timeout: null
   type: custom
   upstream_blocks:
@@ -116,7 +116,7 @@ blocks:
   language: python
   name: train_model_by_pyod/train_xgboost
   retry_config: null
-  status: failed
+  status: updated
   timeout: null
   type: custom
   upstream_blocks:

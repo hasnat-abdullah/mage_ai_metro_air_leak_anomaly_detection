@@ -1,8 +1,8 @@
 connector_type: kafka
-bootstrap_server: "localhost:9092"
-topic: topic_name
-consumer_group: unique_consumer_group
-include_metadata: false
+bootstrap_server: kafka:9092
+topic: metro_air_compressor_data
+consumer_group:
+include_metadata: true
 api_version: 0.10.2
 
 # Uncomment the config below to use SSL config

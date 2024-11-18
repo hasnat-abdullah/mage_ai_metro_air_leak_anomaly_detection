@@ -22,10 +22,10 @@ def transform_xgbod(df: DataFrame, *args, **kwargs):
         Transformed DataFrame with predicted anomalies.
     """
     df = df.iloc[:, 2:]
-    normal_data = df[df['status'] == 0].drop(columns='status')
-    anomalous_data = df[df['status'] == 1].drop(columns='status')
+    normal_data = df[df['_status'] == 0].drop(columns='_status')
+    anomalous_data = df[df['_status'] == 1].drop(columns='_status')
     
-    test_data = df.drop(columns='status')
+    test_data = df.drop(columns='_status')
 
     # Create labels: 0 for normal, 1 for anomalous
     normal_labels = [0] * len(normal_data)

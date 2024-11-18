@@ -2,18 +2,36 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
-  downstream_blocks: []
+  downstream_blocks:
+  - detect_anomaly
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: yaml
   name: grab data from  kafka topic
   retry_config: null
-  status: not_executed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks: []
   uuid: grab_data_from__kafka_topic
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - detect_anomaly_time_series_line_chart_r0
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: detect_anomaly
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - grab_data_from__kafka_topic
+  uuid: detect_anomaly
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -37,4 +55,27 @@ tags: []
 type: streaming
 uuid: metro_air_leak_detection_stream
 variables_dir: /home/src/mage_data/metro_air_leak
-widgets: []
+widgets:
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    chart_type: time series line chart
+    group_by:
+    - _timestamp
+    metrics:
+    - aggregation: max
+      column: prediction
+    time_interval: original
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: detect_anomaly_time series line chart_r0
+  retry_config: null
+  status: executed
+  timeout: null
+  type: chart
+  upstream_blocks:
+  - detect_anomaly
+  uuid: detect_anomaly_time_series_line_chart_r0
