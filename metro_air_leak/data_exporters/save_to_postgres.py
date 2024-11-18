@@ -20,12 +20,13 @@ def export_data_to_postgres(df: DataFrame, **kwargs) -> None:
     table_name = 'air_compressor'  # Specify the name of the table to export data to
     config_path = path.join(get_repo_path(), 'io_config.yaml')
     config_profile = 'default'
+    print(df.columns)
 
     with Postgres.with_config(ConfigFileLoader(config_path, config_profile)) as loader:
         loader.export(
             df,
             schema_name,
             table_name,
-            index=False,  # Specifies whether to include index in exported table
-            if_exists='replace',  # Specify resolution policy if table name already exists
+            index=False,
+            if_exists='replace',
         )

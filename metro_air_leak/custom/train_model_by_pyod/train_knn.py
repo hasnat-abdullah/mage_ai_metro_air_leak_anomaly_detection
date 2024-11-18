@@ -4,8 +4,8 @@ import joblib
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, classification_report,roc_auc_score,roc_curve, confusion_matrix, ConfusionMatrixDisplay, precision_score,recall_score,f1_score
+from sklearn.metrics import accuracy_score, classification_report, roc_auc_score, roc_curve, confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
+from pyod.models.knn import KNN
 if 'custom' not in globals():
     from mage_ai.data_preparation.decorators import custom
 if 'test' not in globals():
@@ -13,15 +13,18 @@ if 'test' not in globals():
 
 
 @custom
-def transform_knn(df: DataFrame, *args, **kwargs):
+def transform_knn_pyod(df: DataFrame, *args, **kwargs):
     """
-    args: The output from any upstream parent blocks (if applicable)
+    Transforms the data using PyOD's KNN for anomaly detection.
+    
+    Args:
+        df: Input DataFrame
+        args: The output from any upstream parent blocks (if applicable)
 
     Returns:
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
     x = df.iloc[:, 1:-1]
-    print(x)
     y = df.iloc[:, -1]
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
@@ -29,50 +32,45 @@ def transform_knn(df: DataFrame, *args, **kwargs):
     scaler = StandardScaler()
     x_train_scaled = scaler.fit_transform(x_train)
     x_test_scaled = scaler.transform(x_test)
-    print('start training')
-    knn = KNeighborsClassifier(n_neighbors=3)
-    print("Start training")
-    knn.fit(x_train_scaled, y_train)
+    
+    print('Starting PyOD KNN training')
+    knn = KNN(contamination=0.1, n_neighbors=3)
+    knn.fit(x_train_scaled)
 
     # Predict on the test set
-    print("Start predicting")
-    y_pred = knn.predict(x_test_scaled)
+    print("Predicting with PyOD KNN")
+    y_test_pred_scores = knn.decision_function(x_test_scaled)  # Higher scores indicate more likely anomalies
+    y_pred = knn.predict(x_test_scaled)  # 1 for outliers, 0 for inliers
 
-    # print(f"KNN report:\n{classification_report(y_test, y_pred)} ")
-    # labels = ['Normal', 'Anomaly']
-    # cm =confusion_matrix(y_test, y_pred)
-    # cm_df = pd.DataFrame(cm, index=labels, columns=labels)
-    # print(cm_df)
-    # Accuracy
+    # Accuracy and classification report
     try:
         accuracy = accuracy_score(y_test, y_pred)
         print(f'Accuracy: {accuracy:.2f}')
 
-        # Precision
         precision = precision_score(y_test, y_pred)
         print(f'Precision: {precision:.2f}')
 
-        # Recall
         recall = recall_score(y_test, y_pred)
         print(f'Recall: {recall:.2f}')
 
-        # F1-Score
         f1 = f1_score(y_test, y_pred)
         print(f'F1-Score: {f1:.2f}')
 
         # Confusion Matrix
         cm = confusion_matrix(y_test, y_pred)
-        print('Confusion Matrix:')
-        print(cm)
+        ConfusionMatrixDisplay(cm).plot()
+        plt.show()
 
         # ROC AUC
-        roc_auc = roc_auc_score(y_test, y_pred)
+        roc_auc = roc_auc_score(y_test, y_test_pred_scores)
         print(f'ROC AUC: {roc_auc:.2f}')
-        # Save the trained knn model
-        joblib.dump(knn, "knn_model_v1.pkl")
-        print("knn model saves as 'knn_model_v1.pkl' ")
+        
+        # Save the trained KNN model
+        joblib.dump(knn, "knn_pyod_model_v1.pkl")
+        print("KNN model saved as 'knn_pyod_model_v1.pkl'")
+
         # ROC Curve
-        fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+        fpr, tpr, _ = roc_curve(y_test, y_test_pred_scores)
         plt.figure(figsize=(8, 6))
         plt.plot(fpr, tpr, color='blue', label='ROC curve (area = %0.2f)' % roc_auc)
         plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
@@ -81,13 +79,9 @@ def transform_knn(df: DataFrame, *args, **kwargs):
         plt.title('Receiver Operating Characteristic (ROC)')
         plt.legend(loc='lower right')
         plt.show()
+        
     except Exception as ex:
-        print(ex)
-
-    # Save the trained knn model
-    joblib.dump(knn, "knn_model_v1.pkl")
-    print("knn model saves as 'knn_model_v1.pkl' ")
-
+        print(f"Error during evaluation: {ex}")
 
 @test
 def test_output(output, *args) -> None:

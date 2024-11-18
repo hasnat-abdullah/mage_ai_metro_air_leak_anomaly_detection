@@ -1,4 +1,5 @@
 from pandas import DataFrame
+import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import IsolationForest
@@ -41,6 +42,7 @@ def transform_random_forest(df: DataFrame, *args, **kwargs):
     print(f"isolation forest:\n{report}")
 
     # Confusion Matrix
+    labels = ['Normal', 'Anomaly']
     cm = confusion_matrix(df['status'], df['predicted_status'])
     cm_df = pd.DataFrame(cm, index=labels, columns=labels)
     print(cm_df)

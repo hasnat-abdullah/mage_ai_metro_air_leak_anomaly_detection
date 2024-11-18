@@ -20,6 +20,7 @@ def execute_transformer_action(df: DataFrame, *args, **kwargs) -> DataFrame:
     Docs: https://docs.mage.ai/guides/transformer-blocks#remove-outliers
     """
     initial_row_count = len(df)
+    print(df)
 
     action = build_transformer_action(
         df,

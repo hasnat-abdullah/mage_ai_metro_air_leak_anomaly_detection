@@ -16,7 +16,7 @@ def load_data_from_postgres(*args, **kwargs):
 
     Docs: https://docs.mage.ai/design/data-loading#postgresql
     """
-    query = 'SELECT * FROM air_compressor LIMIT 100000;'  # Specify your SQL query here
+    query = 'SELECT * FROM air_compressor;'
     config_path = path.join(get_repo_path(), 'io_config.yaml')
     config_profile = 'default'
 

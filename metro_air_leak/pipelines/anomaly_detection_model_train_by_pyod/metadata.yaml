@@ -4,6 +4,7 @@ blocks:
   configuration: {}
   downstream_blocks:
   - data_overview
+  - remove_duplicate
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -18,8 +19,7 @@ blocks:
 - all_upstream_blocks_executed: true
   color: teal
   configuration: {}
-  downstream_blocks:
-  - remove__unnecessary_columns
+  downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -36,41 +36,26 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - remove_duplicate
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: remove _unnecessary_columns
-  retry_config: null
-  status: executed
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - data_overview
-  uuid: remove__unnecessary_columns
-- all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - clean_data_visualisation
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: add label
-  retry_config: null
-  status: executed
-  timeout: null
-  type: transformer
-  upstream_blocks:
   - find_and_drop_ouliers
-  uuid: add_label
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: remove duplicate
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_data_from_poargres
+  uuid: remove_duplicate
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
-  - add_label
+  - train_model_by_pyod/train_knn
+  - train_model_by_pyod/train_isolation_forest
+  - train_model_by_pyod/train_xgboost
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -84,89 +69,59 @@ blocks:
   - remove_duplicate
   uuid: find_and_drop_ouliers
 - all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks:
+  color: teal
+  configuration:
+    file_source:
+      path: custom/train_model_by_pyod/train_knn.py
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: train_model_by_pyod/train_knn
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
   - find_and_drop_ouliers
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: remove duplicate
-  retry_config: null
-  status: executed
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - remove__unnecessary_columns
-  uuid: remove_duplicate
+  uuid: train_model_by_pyod/train_knn
 - all_upstream_blocks_executed: true
-  color: yellow
-  configuration: {}
-  downstream_blocks:
-  - train_knn
-  - train_random_forest
-  - train_isolation_forest
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: clean data visualisation
-  retry_config: null
-  status: executed
-  timeout: null
-  type: custom
-  upstream_blocks:
-  - add_label
-  uuid: clean_data_visualisation
-- all_upstream_blocks_executed: true
-  color: pink
-  configuration: {}
+  color: teal
+  configuration:
+    file_source:
+      path: custom/train_model_by_pyod/train_isolation_forest.py
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: train_KNN
+  name: train_model_by_pyod/train_isolation_forest
   retry_config: null
   status: updated
   timeout: null
   type: custom
   upstream_blocks:
-  - clean_data_visualisation
-  uuid: train_knn
+  - find_and_drop_ouliers
+  uuid: train_model_by_pyod/train_isolation_forest
 - all_upstream_blocks_executed: true
-  color: blue
-  configuration: {}
+  color: teal
+  configuration:
+    file_source:
+      path: custom/train_model_by_pyod/train_xgboost.py
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: train_random_forest
+  name: train_model_by_pyod/train_xgboost
   retry_config: null
   status: updated
   timeout: null
   type: custom
   upstream_blocks:
-  - clean_data_visualisation
-  uuid: train_random_forest
-- all_upstream_blocks_executed: true
-  color: blue
-  configuration: {}
-  downstream_blocks: []
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: train_isolation_forest
-  retry_config: null
-  status: updated
-  timeout: null
-  type: custom
-  upstream_blocks:
-  - clean_data_visualisation
-  uuid: train_isolation_forest
+  - find_and_drop_ouliers
+  uuid: train_model_by_pyod/train_xgboost
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -178,7 +133,7 @@ executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: anomaly_detection
+name: anomaly_detection_model_train_by_pyod
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -188,6 +143,6 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: anomaly_detection
+uuid: anomaly_detection_model_train_by_pyod
 variables_dir: /home/src/mage_data/metro_air_leak
 widgets: []

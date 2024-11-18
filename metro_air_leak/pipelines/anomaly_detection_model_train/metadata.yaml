@@ -1,104 +1,133 @@
 blocks:
 - all_upstream_blocks_executed: true
   color: null
-  configuration:
-    file_source:
-      path: data_loaders/load_air_compressor_data.py
+  configuration: {}
   downstream_blocks:
-  - add_label
+  - data_overview
+  - remove_duplicate
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: load_air_compressor_data
+  name: load data from poargres
   retry_config: null
   status: executed
   timeout: null
   type: data_loader
   upstream_blocks: []
-  uuid: load_air_compressor_data
+  uuid: load_data_from_poargres
 - all_upstream_blocks_executed: true
-  color: null
-  configuration:
-    file_source:
-      path: transformers/add_label.py
-  downstream_blocks:
-  - data_validate_by_pydentic
-  - data_validate_by_df_vector
+  color: teal
+  configuration: {}
+  downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: add_label
+  name: data_overview
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - load_data_from_poargres
+  uuid: data_overview
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - find_and_drop_ouliers
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: remove duplicate
   retry_config: null
   status: executed
   timeout: null
   type: transformer
   upstream_blocks:
-  - load_air_compressor_data
-  uuid: add_label
+  - load_data_from_poargres
+  uuid: remove_duplicate
 - all_upstream_blocks_executed: true
   color: null
+  configuration: {}
+  downstream_blocks:
+  - train_knn
+  - train_random_forest
+  - train_isolation_forest
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: find and drop ouliers
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - remove_duplicate
+  uuid: find_and_drop_ouliers
+- all_upstream_blocks_executed: true
+  color: pink
   configuration: {}
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: data validate by pydentic
+  name: train_KNN
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
-  type: transformer
+  type: custom
   upstream_blocks:
-  - add_label
-  uuid: data_validate_by_pydentic
+  - find_and_drop_ouliers
+  uuid: train_knn
 - all_upstream_blocks_executed: true
-  color: null
+  color: blue
   configuration: {}
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: data_validate_by_df_vector
-  retry_config: null
-  status: updated
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - add_label
-  uuid: data_validate_by_df_vector
-- all_upstream_blocks_executed: false
-  color: null
-  configuration:
-    file_source:
-      path: data_exporters/save_to_postgres.py
-  downstream_blocks: []
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: save_to_postgres
+  name: train_random_forest
   retry_config: null
   status: failed
   timeout: null
-  type: data_exporter
+  type: custom
   upstream_blocks:
-  - data_validate_by_pydentic
-  uuid: save_to_postgres
+  - find_and_drop_ouliers
+  uuid: train_random_forest
+- all_upstream_blocks_executed: true
+  color: blue
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: train_isolation_forest
+  retry_config: null
+  status: failed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - find_and_drop_ouliers
+  uuid: train_isolation_forest
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
 conditionals: []
-created_at: '2024-11-07 04:14:39.597783+00:00'
+created_at: '2024-11-07 07:43:58.477877+00:00'
 data_integration: null
 description: null
 executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: load_local_data_to_Postgres
+name: anomaly_detection_model_train
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -108,6 +137,6 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: load_local_data_to_postgres
+uuid: anomaly_detection_model_train
 variables_dir: /home/src/mage_data/metro_air_leak
 widgets: []
